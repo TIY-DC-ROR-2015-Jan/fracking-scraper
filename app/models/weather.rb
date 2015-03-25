@@ -9,9 +9,20 @@ class Weather
     hits.first
   end
 
+  def self.throttle interval
+    now = Time.now
+    if @_next_allowed_call && @_next_allowed_call > now
+      wait = @_next_allowed_call - now
+      Rails.logger.debug "Rate limiting for #{wait}s"
+      sleep wait
+    end
+    @_next_allowed_call = now + interval
+  end
+
   def self.at location=nil
     location ||= "Arlington, VA"
 
+    throttle 5.seconds
     response = get("/", query: { where: location })
     doc = Nokogiri::HTML(response.body)
 
@@ -20,9 +31,14 @@ class Weather
     flavor = find_one_class(doc, "flavor").text
 
     new temp, remark, flavor
-  rescue
-    # TODO: wat?
-    retry
+
+  rescue => e
+    if response.code == 503
+      Rails.logger.info "#{base_uri} is down; retrying"
+      retry
+    else
+      raise
+    end
   end
 
   attr_reader :temp, :summary, :quip
