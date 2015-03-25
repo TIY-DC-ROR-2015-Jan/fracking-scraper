@@ -22,6 +22,8 @@ gem 'omniauth-github'
 
 gem 'octokit'
 
+gem 'nokogiri'
+
 group :development, :test do
   gem 'spring'
   gem 'better_errors'
