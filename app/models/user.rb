@@ -30,7 +30,10 @@ class User < ActiveRecord::Base
   end
 
   def generate_api_token!
-    key = SecureRandom.hex 24 # TODO: what if this collides?
+    begin
+      key = SecureRandom.hex 24 # TODO: what if this collides?
+    end while Token.exists?(key: key)
+
     expiration = Time.now + 2.weeks
     tokens.create! key: key, expires_at: expiration
   end
