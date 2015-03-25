@@ -34,4 +34,9 @@ class User < ActiveRecord::Base
     expiration = Time.now + 2.weeks
     tokens.create! key: key, expires_at: expiration
   end
+
+  def self.find_by_api_token key
+    token = Token.where(key: key).first
+    token.user
+  end
 end
