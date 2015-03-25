@@ -5,6 +5,8 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable,
          :omniauthable, omniauth_providers: [:github]
 
+  has_many :tokens
+
   serialize :github_data, JSON
 
   def self.from_github_oauth auth
@@ -25,5 +27,11 @@ class User < ActiveRecord::Base
 
   def github_user_data
     octoclient.user
+  end
+
+  def generate_api_token!
+    key = SecureRandom.hex 24 # TODO: what if this collides?
+    expiration = Time.now + 2.weeks
+    tokens.create! key: key, expires_at: expiration
   end
 end

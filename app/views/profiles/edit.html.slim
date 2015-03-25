@@ -1,0 +1,27 @@
+= notice
+
+h1= @user.email
+
+= form_for @user, url: profile_path do |f|
+  = f.label :location
+  = f.text_field :location
+  button Update
+
+table
+  thead
+    tr
+      th Key
+      th Expires At
+      th Disabled?
+  tbody
+    - @user.tokens.each do |t|
+      tr
+        td= t.key
+        td= t.expires_at
+        td
+          = t.disabled?
+          = form_tag profile_token_path(t), method: :delete do
+            button Disable
+
+= form_tag profile_tokens_path do
+  button Generate New Token

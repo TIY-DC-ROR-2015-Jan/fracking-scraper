@@ -11,7 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150325132230) do
+ActiveRecord::Schema.define(version: 20150325150707) do
+
+  create_table "tokens", force: :cascade do |t|
+    t.integer  "user_id"
+    t.string   "key",                       null: false
+    t.datetime "expires_at"
+    t.boolean  "active",     default: true, null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
+  add_index "tokens", ["user_id"], name: "index_tokens_on_user_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
@@ -28,6 +39,7 @@ ActiveRecord::Schema.define(version: 20150325132230) do
     t.datetime "updated_at"
     t.string   "github_uid"
     t.text     "github_data"
+    t.string   "location"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true
