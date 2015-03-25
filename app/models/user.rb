@@ -20,7 +20,7 @@ class User < ActiveRecord::Base
   end
 
   def octoclient
-    Octokit::Client.new access_token: github_token
+    @_octoclient ||= Octokit::Client.new(access_token: github_token)
   end
 
   def github_user_data
