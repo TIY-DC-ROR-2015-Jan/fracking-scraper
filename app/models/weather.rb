@@ -2,19 +2,27 @@ class Weather
   include HTTParty
   base_uri "http://thefuckingweather.com/"
 
+  def self.find_one_class doc, klass
+    selector = ".#{klass}"
+    hits = doc.css selector
+    raise "Expected 1 match for '#{selector}', got #{hits.count}" unless hits.count == 1
+    hits.first
+  end
+
   def self.at location=nil
-    response = get("/")
+    location ||= "Arlington, VA"
+
+    response = get("/", query: { where: location })
     doc = Nokogiri::HTML(response.body)
 
-    temp    = doc.css('.temperature').first['tempf']
-    remarks = doc.css('.remark')
-    raise "Expected 1 remark, not #{remarks.count}" unless remarks.count == 1
-    remark = remarks.first.text
-    flavors = doc.css('.flavor')
-    raise "Expected 1 flavor, not #{flavors.count}" unless flavors.count == 1
-    flavor = flavors.first.text
+    temp   = doc.css('.temperature').first['tempf']
+    remark = find_one_class(doc, "remark").text
+    flavor = find_one_class(doc, "flavor").text
 
     new temp, remark, flavor
+  rescue
+    # TODO: wat?
+    retry
   end
 
   attr_reader :temp, :summary, :quip
