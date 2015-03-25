@@ -9,6 +9,10 @@ class ApiController < ActionController::Base
     }, status: 500
   end
 
+  rescue_from Token::Invalid do |e|
+    render json: { error: "Token invalid" }, status: 403
+  end
+
   def current_user
     return @_current_user if @_current_user
     key = params[:access_token]

@@ -36,7 +36,9 @@ class User < ActiveRecord::Base
   end
 
   def self.find_by_api_token key
-    token = Token.where(key: key).first
+    token = Token.valid.where(key: key).first
+    # if !token || token.disabled? || token.expired? ...
+    raise Token::Invalid unless token
     token.user
   end
 end
