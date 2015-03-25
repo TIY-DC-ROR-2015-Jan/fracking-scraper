@@ -20,6 +20,8 @@ gem 'httparty'
 gem 'omniauth'
 gem 'omniauth-github'
 
+gem 'octokit'
+
 group :development, :test do
   gem 'spring'
   gem 'better_errors'
